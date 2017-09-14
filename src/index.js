@@ -9,7 +9,7 @@ class TodoApp extends React.Component{
     this.handleEdit = this.handleEdit.bind(this);
     this.state = {
       items: {
-          [`${+Date.now()}`]: { content_id: +Date.now(), text: 'luh' }
+          [`${+Date.now()}`]: { contentId: +Date.now(), text: 'luh' }
       }
     }
   }
@@ -31,11 +31,12 @@ class TodoApp extends React.Component{
   }
 
   handleSubmit(value) {
+    const now = +Date.now()
     var newItem = {
-      [`${+Date.now()}`]:
+      [now]:
       {
         text: value,
-        content_id: +Date.now()
+        contentId: [now]
       }
     };
     this.setState({
@@ -49,31 +50,33 @@ class TodoApp extends React.Component{
     })
   }
 
-  handleEdit() {
-
+  handleEdit(itemId, value) {
+    console.error(itemId)
+    this.setState({
+      items: {...this.state.items, [itemId]: {text: value, contentId: itemId}}
+     })
   }
 }
 
-const TodoList = ( {items, onDelete, onSubmit, value} ) => {
+const TodoList = ( {items, onDelete, onEdit , value} ) => {
   console.error(items)
   return(
     <ul>
       {Object.keys(items).filter(id => items[id] !== undefined).map(id => {
-      return <li key={ items[id].content_id }>
+      return <li key={ items[id].contentId }>
           { items[id].text }
-          <EditListItem items={items} value={value} onSubmit={onEdit} />
-          <button onClick={e => onDelete(items[id])}> Delete </button>
+          <EditListItem id={items[id].contentId} value={value} onEdit={onEdit} />
+          <button onClick={e => onDelete(items[id].contentId)}> Delete </button>
         </li>
       })}
     </ul>
   )
 }
 
-const EditListItem = ( { value, onEdit, items} ) => {
+const EditListItem = ( { value, onEdit, id, items} ) => {
   return(
   <div>
-    <button >Edit</button>
-    <InputForm  value={value} onSubmit={onSubmit} items={items} />
+    <InputForm  value={value} onSubmit={(value) => onEdit(id, value) } items={items} />
   </div>
   )
 }
@@ -87,7 +90,7 @@ const InputForm = ( {value, onSubmit, items} ) => {
         me.value = ''
     }}>
       <input ref={el => me = el}   value={value} required autoFocus />
-      <button> {'Lagay mo na to sa #' + (Object.entries(items).length +1)} </button>
+      <button> Nanay mo submit </button>
     </form>
   )
 }
