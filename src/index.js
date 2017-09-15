@@ -90,7 +90,7 @@ const InputForm = ( {value, onSubmit, items} ) => {
         me.value = ''
     }}>
       <input ref={el => me = el}   value={value} required autoFocus />
-      <button> Nanay mo submit </button>
+      <button> Just do it! </button>
     </form>
   )
 }
