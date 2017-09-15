@@ -7,23 +7,31 @@ class TodoApp extends React.Component{
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
     this.handleEdit = this.handleEdit.bind(this);
+    this.toggleHidden = this.toggleHidden.bind(this);
     this.state = {
       items: {
-          [`${+Date.now()}`]: { contentId: +Date.now(), text: 'luh' }
+          [`${+Date.now()}`]: { contentId: +Date.now(), text: 'luh', isHidden: true  }
       }
     }
   }
 
+  toggleHidden(itemId) {
+    this.setState({
+      items: { ...this.state.items, [itemId]: {contentId: itemId, text: itemId.text, isHidden: false }}
+    })
+  }
 
   render(){
     return(
       <div>
         <h3>To Do mo 'to!</h3>
         <TodoList
+          toggleHidden = {this.state.toggleHidden}
           items = {this.state.items}
           onDelete={this.handleDelete}
           onEdit={this.handleEdit}
           onSubmit={this.handleSubmit}
+          toggleHidden = {this.toggleHidden}
         />
         <InputForm value={this.state.text} onSubmit={this.handleSubmit} items={this.state.items}/>
       </div>
@@ -36,7 +44,8 @@ class TodoApp extends React.Component{
       [now]:
       {
         text: value,
-        contentId: [now]
+        contentId: [now],
+        isHidden: true
       }
     };
     this.setState({
@@ -53,19 +62,21 @@ class TodoApp extends React.Component{
   handleEdit(itemId, value) {
     console.error(itemId)
     this.setState({
-      items: {...this.state.items, [itemId]: {text: value, contentId: itemId}}
+      items: {...this.state.items, [itemId]: {text: value, contentId: itemId, isHidden: true}}
      })
   }
 }
 
-const TodoList = ( {items, onDelete, onEdit , value} ) => {
+const TodoList = ( {items, onDelete, onEdit , value, toggleHidden} ) => {
   console.error(items)
   return(
     <ul>
       {Object.keys(items).filter(id => items[id] !== undefined).map(id => {
       return <li key={ items[id].contentId }>
           { items[id].text }
-          <EditListItem id={items[id].contentId} value={value} onEdit={onEdit} />
+          {items[id].isHidden ?
+            <button onClick = { e => toggleHidden(id) }> Edit mo to! </button>
+          : <EditListItem id={items[id].contentId} value={value} onEdit={onEdit}  />}
           <button onClick={e => onDelete(items[id].contentId)}> Delete </button>
         </li>
       })}
